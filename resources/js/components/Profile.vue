@@ -19,7 +19,7 @@
             <h5 class="widget-user-desc text-right">Web Designer</h5>
           </div>
           <div class="widget-user-image">
-            <img class="img-circle" src="https://via.placeholder.com/50" alt="user Avatar" />
+            <img class="img-circle" :src="getProfilePhoto()" alt="user Avatar" />
           </div>
           <div class="card-footer">
             <div class="row">
@@ -194,7 +194,10 @@ export default {
     console.log("Component mounted");
   },
   methods: {
-
+    getProfilePhoto(){
+        let photo = (this.form.photo.length > 200)? this.form.photo : `img/profile/${this.form.photo}`;
+        return photo;
+    },
     updateProfile(e) {
       let file = e.target.files[0];
       let reader = new FileReader();

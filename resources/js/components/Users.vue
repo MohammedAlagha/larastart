@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div class="row mt-5">
+    <div class="row mt-5" v-if="$gate.isAdmin()">
       <div class="col-md-12">
         <div class="card">
           <div class="card-header">
@@ -50,6 +50,10 @@
         </div>
         <!-- /.card -->
       </div>
+    </div>
+
+    <div v-if="!$gate.isAdmin()">
+        <not-found></not-found>
     </div>
 
     <!-- Modal -->
@@ -181,8 +185,10 @@ export default {
       $("#addNewModal").modal("show");
       this.form.fill(user);
     },
-    loadUser() {
-      axios.get("api/user").then(({ data }) => (this.users = data.data));
+    loadUsers() {
+      if (this.$gate.isAdmin()) {
+        axios.get("api/user").then(({ data }) => (this.users = data.data));
+      }
     },
 
     createUser() {
@@ -256,10 +262,10 @@ export default {
     console.log("Component mounted");
   },
   created() {
-    this.loadUser();
-    // setInterval(()=>this.loadUser(),3000);
+    this.loadUsers();
+    // setInterval(()=>this.loadUsers(),3000);
     Fire.$on("AfterCreate", () => {
-      this.loadUser();
+      this.loadUsers();
     });
   }
 };

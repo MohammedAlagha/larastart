@@ -27,6 +27,13 @@ Vue.use(VueProgressBar, {
     height: '2px'
   })
 
+  import gate from "./gate"
+
+  Vue.prototype.$gate = new gate(user);     //bring window.user from app/master line 168
+
+
+
+
 import swal from 'sweetalert2'
 window.swal = swal;
 
@@ -83,6 +90,11 @@ Vue.component(
 Vue.component(
     'passport-personal-access-tokens',
     require('./components/passport/PersonalAccessTokens.vue').default
+);
+
+Vue.component(
+    'not-found',
+    require('./components/NotFound.vue').default
 );
 
 

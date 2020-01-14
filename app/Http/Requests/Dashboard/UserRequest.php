@@ -49,7 +49,7 @@ class UserRequest extends FormRequest
                         'email' => 'required|string|email|max:191|unique:users,email,' . $collection['id'],
                         'type' => 'required',
                         'image' => 'image',
-                        'password' => 'required|min:8',
+                        'password' => 'sometimes|required|min:8',
                     ];
                 }
                 break;
