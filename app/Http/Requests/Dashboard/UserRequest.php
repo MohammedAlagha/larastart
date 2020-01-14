@@ -24,38 +24,35 @@ class UserRequest extends FormRequest
     public function rules()
     {
 
-        switch($this->method())
-        {
-           case "GET":
-           case "DELETE":
-                   return [];
-               break;
+        switch ($this->method()) {
+            case "GET":
+            case "DELETE":
+                return [];
+                break;
 
-           case "POST":
-               return [
-                   'name' =>'required|min:4',
-                   'email' =>'required|email|unique:users,email',
-                   'type' =>'required',
-                   'image' =>'image',
-                   'password' =>'required|min:8',
+            case "POST":
+                return [
+                    'name' => 'required|min:4',
+                    'email' => 'required|string|max:191|email|unique:users,email',
+                    'type' => 'required',
+                    'image' => 'image',
+                    'password' => 'required|min:8',
 
-               ];
-               break;
+                ];
+                break;
 
-           case "PUT":
-           case "PATCH":
-               {
-                   $collection = collect($this->request)->toArray();
-               return [
-                   'first_name' =>'required|min:4',
-                   'last_name' =>'required|min:4',
-                   'email' => 'required|email|unique:users,email,'.$collection['id'],
-                   'image' =>'image',
-                   'permissions'          =>'required|min:1',
-               ];
-           }
-           break;
-       }
-
+            case "PUT":
+            case "PATCH": {
+                    $collection = collect($this->request)->toArray();
+                    return [
+                        'name' => 'required|min:4',
+                        'email' => 'required|string|email|max:191|unique:users,email,' . $collection['id'],
+                        'type' => 'required',
+                        'image' => 'image',
+                        'password' => 'required|min:8',
+                    ];
+                }
+                break;
+        }
     }
 }

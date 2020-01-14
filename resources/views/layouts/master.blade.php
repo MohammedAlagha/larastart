@@ -85,8 +85,14 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
+                                    <router-link to="/developer" class="nav-link ">
+                                        <i class=" nav-icon fas fa-cogs "></i>
+                                        <p>Developer</p>
+                                    </router-link>
+                                </li>
+                                <li class="nav-item">
                                     <router-link to="/users" class="nav-link ">
-                                        <i class="fas fa-users nav-icon"></i>
+                                        <i class="nav-icon fas fa-users "></i>
                                         <p>Users</p>
                                     </router-link>
                                 </li>
