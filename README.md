@@ -13,8 +13,8 @@ laravel 6 - Bootstrap 4 - Vuejs ^2.6.11
  - run composer install
  - run npm install
  - run php artisan key:generate
- - run command "php artisan migrate" --seed
- - login as admin by email:'admin@admin.com', password:'123456789'
+ - run command "php artisan migrate --seed" 
+ - login as admin by email:admin@admin.com, password:123456789
    
 ### Server Requirements
  
