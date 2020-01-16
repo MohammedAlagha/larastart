@@ -25,7 +25,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="user in users" :key="user.id">
+                <tr v-for="user in users.data" :key="user.id">
                   <td>{{user.id}}</td>
                   <td>{{user.name}}</td>
                   <td>{{user.email}}</td>
@@ -47,13 +47,16 @@
             </table>
           </div>
           <!-- /.card-body -->
+          <div class="card-footer">
+            <pagination :data="users" @pagination-change-page="getResults"></pagination>
+          </div>
         </div>
         <!-- /.card -->
       </div>
     </div>
 
     <div v-if="!$gate.isAdmin()">
-        <not-found></not-found>
+      <not-found></not-found>
     </div>
 
     <!-- Modal -->
@@ -174,6 +177,12 @@ export default {
   },
 
   methods: {
+    // Our method to GET results from a Laravel endpoint  pagination
+    getResults(page = 1) {
+      axios.get("api/user?page=" + page).then(response => {
+        this.users = response.data;
+      });
+    },
     newModal() {
       this.editMode = false;
       this.form.reset();
@@ -186,8 +195,8 @@ export default {
       this.form.fill(user);
     },
     loadUsers() {
-      if (this.$gate.isAdmin()) {
-        axios.get("api/user").then(({ data }) => (this.users = data.data));
+      if (this.$gate.isAdminOrAuthor()) {
+        axios.get("api/user").then(({ data }) => (this.users = data));
       }
     },
 
@@ -260,8 +269,19 @@ export default {
 
   mounted() {
     console.log("Component mounted");
+
+    // Fetch initial results
   },
   created() {
+    Fire.$on("searching", () => {
+      let query = this.$parent.search;
+      axios
+        .get("api/findUser?q=" + query)
+        .then(( data ) => {
+          this.users = data.data;
+        })
+        .catch(() => {});
+    });
     this.loadUsers();
     // setInterval(()=>this.loadUsers(),3000);
     Fire.$on("AfterCreate", () => {

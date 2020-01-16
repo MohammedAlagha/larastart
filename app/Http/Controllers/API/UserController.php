@@ -8,6 +8,7 @@ use App\Http\Requests\Dashboard\UserRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\User;
+use Illuminate\Support\Facades\Gate;
 use Intervention\Image\Facades\Image as Image;
 use Illuminate\Support\Facades\Hash;
 
@@ -22,14 +23,33 @@ class UserController extends Controller
     public function __construct()
     {
         $this->middleware('auth:api');
-      //  $this->authorize('isAdmin');
+        //$this->authorize('isAdmin');
     }
 
 
     public function index()
     {
-        $this->authorize('isAdmin');
-        return User::latest()->paginate(10);
+        //$this->authorize('isAdmin');
+
+        // if (Gate::allow('isAdmin') || Gate::allow('isAuthor')) {
+
+        return User::latest()->paginate(5);
+        // }
+
+    }
+
+    public function search(Request $request)
+    {
+        if ($search = $request->q ) {
+            $users = User::where(function ($query) use ($search) {
+                $query->where('name', 'LIKE', "%$search%")
+                    ->orWhere('email', 'LIKE', "%$search%")
+                    ->orWhere('type', 'LIKE', "%$search%");
+            })->paginate(5);
+        }else{
+            $users =  User::latest()->paginate(5);
+        }
+        return $users;
     }
 
     /**
@@ -41,12 +61,12 @@ class UserController extends Controller
     public function store(UserRequest $request)
     {
         return User::create([
-            'name'=>$request['name'],
-            'email'=>$request['email'],
-            'type'=>$request['type'],
-            'bio'=>$request['bio'],
-            'photo'=>$request['photo'],
-            'password'=>Hash::make($request['password'])
+            'name' => $request['name'],
+            'email' => $request['email'],
+            'type' => $request['type'],
+            'bio' => $request['bio'],
+            'photo' => $request['photo'],
+            'password' => Hash::make($request['password'])
         ]);
     }
 
@@ -57,9 +77,9 @@ class UserController extends Controller
         $current_photo = $user->photo;
 
         if ($request->photo != $current_photo) {
-            $name = time().'.'.explode('/',explode(':',substr($request->photo,0,strpos($request->photo,';')))[1])[1]; //to extact file name from base 64
+            $name = time() . '.' . explode('/', explode(':', substr($request->photo, 0, strpos($request->photo, ';')))[1])[1]; //to extact file name from base 64
 
-            Image::make($request->photo)->save(public_path('img/profile/').$name);
+            Image::make($request->photo)->save(public_path('img/profile/') . $name);
 
             $request->merge(['photo' => $name]);
 
@@ -70,12 +90,12 @@ class UserController extends Controller
         }
 
         if (!empty($request->Password)) {
-            $request->merge(['password'=>Hash::make($request->Password)]);
+            $request->merge(['password' => Hash::make($request->Password)]);
         }
 
         $user->update($request->all());
 
-        return ['message'=>'Success'];
+        return ['message' => 'Success'];
     }
 
 
@@ -83,6 +103,7 @@ class UserController extends Controller
     {
         return auth('api')->user();
     }
+
 
 
     /**
@@ -108,7 +129,7 @@ class UserController extends Controller
         $user = User::findOrFail($id);
 
         $user->update($request->except('password'));
-        $user->update(['password'=>Hash::make($request['password'])]);
+        $user->update(['password' => Hash::make($request['password'])]);
         return ['message' => 'Updated the user info'];
     }
 
@@ -126,6 +147,6 @@ class UserController extends Controller
 
         $user->delete();
 
-        return ['message'=>'User Deleted'];
+        return ['message' => 'User Deleted'];
     }
 }
